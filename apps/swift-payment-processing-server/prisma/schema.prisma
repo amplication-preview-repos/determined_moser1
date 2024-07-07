@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accountNumber String?
+  bankName      String?
+  balance       Float?
+  currency      String?
+  transactions  Transaction[]
+}
+
+model PaymentMessage {
+  id                 String        @id @default(cuid())
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  swiftCode          String?
+  beneficiaryAccount String?
+  transactionAmount  Float?
+  currency           String?
+  paymentDescription String?
+  transactions       Transaction[]
+}
+
+model Transaction {
+  id               String          @id @default(cuid())
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  transactionId    String?
+  amount           Float?
+  transactionDate  DateTime?
+  paymentMessage   PaymentMessage? @relation(fields: [paymentMessageId], references: [id])
+  paymentMessageId String?
+  account          Account?        @relation(fields: [accountId], references: [id])
+  accountId        String?
+}
+
+model Beneficiary {
+  id                 String   @id @default(cuid())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  name               String?
+  address            String?
+  country            String?
+  beneficiaryAccount String?
+}
